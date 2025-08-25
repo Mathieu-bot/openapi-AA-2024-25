@@ -1,0 +1,169 @@
+openapi: 3.0.3
+info:
+  title: Tasks API
+  version: "1.0.0"
+paths:
+  /tasks:
+    get:
+      summary: List tasks
+      responses:
+        "200":
+          description: List of tasks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task'
+              examples:
+                sample:
+                  value:
+                    - id: 1
+                      title: "Do shopping"
+                      completed: false
+                    - id: 2
+                      title: "Read a book"
+                      completed: true
+    post:
+      summary: Create tasks
+      description: Create a list of new tasks from the request body and return the created list.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/TaskInput'
+            example:
+              - title: "Do shopping"
+                completed: false
+              - title: "Read a book"
+                completed: false
+      responses:
+        "201":
+          description: Created list of tasks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task'
+    delete:
+      summary: Delete multiple tasks
+      description: Delete tasks by a list of ids and return the deleted tasks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteIds'
+            example:
+              ids: [1, 2, 3]
+      responses:
+        "200":
+          description: Deleted tasks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task'
+  /tasks/{id}:
+    get:
+      summary: Get task by id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        "200":
+          description: Task found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+              example:
+                id: 1
+                title: "Do shopping"
+                completed: false
+        "404":
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: "Task not found"
+    delete:
+      summary: Delete task by id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        "200":
+          description: Deleted task
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+              example:
+                id: 2
+                title: "Read a book"
+                completed: true
+        "404":
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: "Task not found"
+components:
+  schemas:
+    Task:
+      type: object
+      required: [id, title, completed]
+      properties:
+        id:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: "Do shopping"
+        completed:
+          type: boolean
+          example: false
+    TaskInput:
+      type: object
+      required: [title, completed]
+      properties:
+        title:
+          type: string
+          example: "Do shopping"
+        completed:
+          type: boolean
+          example: false
+    DeleteIds:
+      type: object
+      required: [ids]
+      properties:
+        ids:
+          type: array
+          items:
+            type: integer
+          example: [1, 2, 3]
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+          example: "Task not found"
