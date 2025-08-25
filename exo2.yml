@@ -1,0 +1,78 @@
+openapi: 3.0.3
+info:
+  title: Users API
+  version: "1.0.0"
+paths:
+  /users:
+    get:
+      summary: List users
+      description: Return a list of users. Supports pagination with page and size.
+      parameters:
+        - name: page
+          in: query
+          description: Page number (starts at 1)
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          example: 1
+        - name: size
+          in: query
+          description: Page size (number of items per page)
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          example: 20
+      responses:
+        "200":
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+              examples:
+                sample:
+                  value:
+                    - id: 1
+                      name: Alice
+                      email: alice@example.com
+                    - id: 2
+                      name: Bob
+                      email: bob@example.com
+        "400":
+          description: Bad types for provided query parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: "Bad types for provided query parameters"
+components:
+  schemas:
+    User:
+      type: object
+      required: [id, name, email]
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Alice
+        email:
+          type: string
+          format: email
+          example: alice@example.com
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+          example: "Bad types for provided query parameters"
