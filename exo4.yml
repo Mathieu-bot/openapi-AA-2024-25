@@ -1,0 +1,70 @@
+openapi: 3.0.3
+info:
+  title: Products Search API
+  version: "1.0.0"
+paths:
+  /products:
+    get:
+      summary: Search products
+      description: Return a list of products using optional search and limit parameters.
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Q'
+      responses:
+        "200":
+          description: List of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+              examples:
+                many:
+                  summary: Many products
+                  value:
+                    - name: "Milk"
+                      expiration_datetime: "2025-12-31T23:59:59Z"
+                      price: 2.49
+                    - name: "Bread"
+                      expiration_datetime: "2025-09-15T08:00:00Z"
+                      price: 1.20
+                empty:
+                  summary: No results
+                  value: []
+components:
+  parameters:
+    Limit:
+      name: limit
+      in: query
+      description: Maximum number of items to return
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        default: 10
+      example: 20
+    Q:
+      name: q
+      in: query
+      description: Search term
+      required: false
+      schema:
+        type: string
+      example: milk
+  schemas:
+    Product:
+      type: object
+      required: [name, expiration_datetime, price]
+      properties:
+        name:
+          type: string
+          example: "Milk"
+        expiration_datetime:
+          type: string
+          format: date-time
+          example: "2025-12-31T23:59:59Z"
+        price:
+          type: number
+          format: float
+          example: 2.49
